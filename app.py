@@ -77,4 +77,6 @@ async def lifespan(app: FastAPI):
     create_tables()
     populate_data()
     yield
+    
+app = FastAPI(lifespan=lifespan)
         
