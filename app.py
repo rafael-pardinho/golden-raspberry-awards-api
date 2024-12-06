@@ -70,3 +70,11 @@ def populate_data():
             print("Banco de dados populado com sucesso.")
     except Exception as e:
         print(f"Erro ao carregar os dados do CSV: {e}")
+
+# Configurar ciclo de vida do FastAPI
+async def lifespan(app: FastAPI):
+    initialize_connection()
+    create_tables()
+    populate_data()
+    yield
+        
