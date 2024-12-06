@@ -40,3 +40,33 @@ def create_tables():
         print("Tabela 'movies' criada ou já existe.")
     except Exception as e:
         print(f"Erro ao criar tabelas: {e}")
+        
+# A função populate_data() é responsável por inserir os dados do arquivo CSV no banco de dados SQLite
+def populate_data():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Verificar se o arquivo CSV existe
+    csv_path = "data/movielist.csv"
+    if not os.path.exists(csv_path):
+        print(f"Erro: Arquivo CSV não encontrado em {csv_path}")
+        return
+
+    try:
+        with open(csv_path, "r") as file:
+            reader = csv.DictReader(file, delimiter=';')
+            for row in reader:
+                cursor.execute("""
+                INSERT INTO movies (year, title, studios, producers, winner)
+                VALUES (?, ?, ?, ?, ?)
+                """, (
+                    int(row["year"]),
+                    row["title"],
+                    row["studios"],
+                    row["producers"],
+                    row["winner"].lower() == "yes"
+                ))
+            conn.commit()
+            print("Banco de dados populado com sucesso.")
+    except Exception as e:
+        print(f"Erro ao carregar os dados do CSV: {e}")
