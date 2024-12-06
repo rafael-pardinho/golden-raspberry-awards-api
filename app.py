@@ -14,3 +14,6 @@ def initialize_connection():
     if global_connection is None:
         global_connection = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
         global_connection.row_factory = sqlite3.Row  # Permite acessar colunas por nome
+
+def get_connection():
+    return global_connection
