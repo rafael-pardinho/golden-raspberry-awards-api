@@ -79,4 +79,68 @@ async def lifespan(app: FastAPI):
     yield
     
 app = FastAPI(lifespan=lifespan)
-        
+
+
+@app.get("/producers/intervals")
+
+#A função get_producer_intervals() implementa a lógica para calcular os intervalos de tempo entre prêmios consecutivos ganhos por produtores na tabela movies
+def get_producer_intervals():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Verificar se a tabela existe
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='movies'")
+        if not cursor.fetchone():
+            raise HTTPException(status_code=500, detail="Tabela 'movies' não encontrada. Banco não inicializado corretamente.")
+
+        print("Tabela 'movies' encontrada no banco de dados.")
+
+        # Consultar filmes vencedores
+        cursor.execute("SELECT * FROM movies WHERE winner = 1")
+        winners = cursor.fetchall()
+
+        if not winners:
+            raise HTTPException(status_code=404, detail="Nenhum vencedor encontrado no banco de dados.")
+
+        print(f"{len(winners)} vencedores encontrados no banco de dados.")
+
+        producer_intervals = {}
+        for movie in winners:
+            producers = [p.strip() for p in movie["producers"].split(",")]
+            for producer in producers:
+                if producer not in producer_intervals:
+                    producer_intervals[producer] = []
+                producer_intervals[producer].append(movie["year"])
+
+        # Calcular intervalos
+        min_intervals = []
+        max_intervals = []
+        for producer, years in producer_intervals.items():
+            years.sort()
+            intervals = [years[i + 1] - years[i] for i in range(len(years) - 1)]
+            if intervals:
+                min_interval = min(intervals)
+                max_interval = max(intervals)
+                min_intervals.append({
+                    "producer": producer,
+                    "interval": min_interval,
+                    "previousWin": years[intervals.index(min_interval)],
+                    "followingWin": years[intervals.index(min_interval) + 1]
+                })
+                max_intervals.append({
+                    "producer": producer,
+                    "interval": max_interval,
+                    "previousWin": years[intervals.index(max_interval)],
+                    "followingWin": years[intervals.index(max_interval) + 1]
+                })
+
+        print(f"Intervalos calculados com sucesso. Min: {len(min_intervals)}, Max: {len(max_intervals)}")
+
+        return {
+            "min": sorted(min_intervals, key=lambda x: x["interval"]),
+            "max": sorted(max_intervals, key=lambda x: x["interval"], reverse=True)
+        }
+    except Exception as e:
+        print(f"Erro ao calcular intervalos: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao calcular intervalos: {e}")        
