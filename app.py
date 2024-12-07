@@ -101,6 +101,7 @@ def get_producer_intervals():
         winners = cursor.fetchall()
 
         if not winners:
+            # Atualize aqui para retornar 404
             raise HTTPException(status_code=404, detail="Nenhum vencedor encontrado no banco de dados.")
 
         print(f"{len(winners)} vencedores encontrados no banco de dados.")
@@ -141,6 +142,9 @@ def get_producer_intervals():
             "min": sorted(min_intervals, key=lambda x: x["interval"]),
             "max": sorted(max_intervals, key=lambda x: x["interval"], reverse=True)
         }
+    except HTTPException as e:
+        # Mantenha o comportamento esperado para HTTPException
+        raise e
     except Exception as e:
         print(f"Erro ao calcular intervalos: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao calcular intervalos: {e}")        
+        raise HTTPException(status_code=500, detail=f"Erro ao calcular intervalos: {e}")
