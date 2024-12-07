@@ -54,3 +54,18 @@ def test_get_producer_intervals_success(setup_database):
     assert max_producer["producer"] == "Producer B"
     assert max_producer["interval"] == 3
 
+def test_get_producer_intervals_no_data():
+    """
+    Testa o endpoint /producers/intervals quando não há dados no banco.
+    """
+    initialize_connection()
+    create_tables()
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM movies")
+    conn.commit()
+
+    client = TestClient(app)
+    response = client.get("/producers/intervals")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Nenhum vencedor encontrado no banco de dados."}
