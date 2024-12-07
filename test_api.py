@@ -31,4 +31,26 @@ def setup_database():
     # Limpa o banco após o teste
     cursor.execute("DROP TABLE IF EXISTS movies")
     conn.commit()
+    
+def test_get_producer_intervals_success(setup_database):
+    """
+    Testa o endpoint /producers/intervals com dados válidos.
+    """
+    client = TestClient(app)
+    response = client.get("/producers/intervals")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert "min" in data
+    assert "max" in data
+
+    # Verifica os dados mínimos
+    min_producer = data["min"][0]
+    assert min_producer["producer"] == "Producer A"
+    assert min_producer["interval"] == 1
+
+    # Verifica os dados máximos
+    max_producer = data["max"][0]
+    assert max_producer["producer"] == "Producer B"
+    assert max_producer["interval"] == 3
 
