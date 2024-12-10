@@ -1,3 +1,4 @@
+
 # Golden Raspberry Awards API
 
 ## Descrição
@@ -49,7 +50,7 @@ Esta é uma aplicação FastAPI que fornece um endpoint para calcular os interva
 1. **Inicie o servidor FastAPI**
 
    ```bash
-   uvicorn app:app --reload
+   uvicorn app.frameworks_and_drivers.api.api:app --reload
    ```
 
 2. **Acesse os endpoints**
@@ -86,36 +87,39 @@ O endpoint principal é:
 }
 ```
 
-## Estrutura do Projeto
+## Arquitetura do Projeto
 
-- **`app.py`**: Arquivo principal da aplicação.
-- **`test_api.py`**: Arquivo para rodar o teste da API.
-- **`requirements.txt`**: Lista de dependências Python.
-- **`data/movielist.csv`**: Arquivo CSV contendo os dados dos filmes.
+Este projeto segue os princípios da **Clean Architecture**. A arquitetura foi organizada para promover a separação de responsabilidades e a independência entre as camadas.
+
+### Estrutura
+
+- **Domain (Camada de Domínio)**: Contém as regras de negócio fundamentais. 
+  - **`entities/movie.py`**: Define a entidade `Movie` com os atributos necessários.
+
+- **Use Cases (Casos de Uso)**: Implementa a lógica de aplicação.
+  - **`use_cases/producer_intervals.py`**: Calcula os intervalos entre prêmios consecutivos para os produtores.
+
+- **Interface Adapters (Adaptadores de Interface)**: Faz a ponte entre o domínio e os frameworks ou tecnologias externas.
+  - **`repositories/movie_repository.py`**: Interage com o banco de dados para buscar os dados.
+  - **`controllers/producer_controller.py`**: Controla o fluxo de dados entre os casos de uso e os endpoints.
+
+- **Frameworks e Drivers**: Contém detalhes específicos de infraestrutura.
+  - **`database/sqlite_handler.py`**: Gerencia a conexão com o banco de dados SQLite.
+  - **`api/api.py`**: Define os endpoints da aplicação usando FastAPI.
+
+### Justificativa para a Clean Architecture
+
+1. **Independência de Frameworks**: A lógica de negócio não depende diretamente do FastAPI ou SQLite, permitindo substituí-los facilmente.
+2. **Testabilidade**: Cada camada é isolada, facilitando a criação de testes unitários.
+3. **Facilidade de Manutenção**: A separação de responsabilidades torna o código mais organizado e menos propenso a erros ao evoluir.
+4. **Reutilização**: As regras de negócio e os casos de uso podem ser reutilizados em diferentes contextos (ex.: APIs REST, serviços de backend).
 
 ## Testes
 
 1. Certifique-se de que o ambiente virtual está ativado.
 2. Rode os testes utilizando o seguinte comando:
    ```bash
-   pytest test_api.py
+   pytest
    ```
 
-## Dependências
-
-- `fastapi`
-- `uvicorn`
-- `pytest`
-- `httpx`
-
-Instale todas as dependências usando:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Observações
-
-- Certifique-se de que o arquivo CSV esteja no formato correto e no caminho esperado.
-- Esta aplicação usa o banco de dados SQLite em memória. Todos os dados serão perdidos ao encerrar a aplicação.
-
+---
