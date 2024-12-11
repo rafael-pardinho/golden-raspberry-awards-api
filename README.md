@@ -1,4 +1,3 @@
-
 # Golden Raspberry Awards API
 
 ## Descrição
@@ -74,14 +73,26 @@ O endpoint principal é:
       "interval": 1,
       "previousWin": 2008,
       "followingWin": 2009
+    },
+    {
+      "producer": "Producer 2",
+      "interval": 1,
+      "previousWin": 2018,
+      "followingWin": 2019
     }
   ],
   "max": [
     {
       "producer": "Producer 2",
-      "interval": 5,
-      "previousWin": 2000,
-      "followingWin": 2005
+      "interval": 13,
+      "previousWin": 2002,
+      "followingWin": 2015
+    },
+    {
+      "producer": "Producer 1",
+      "interval": 13,
+      "previousWin": 2015,
+      "followingWin": 2028
     }
   ]
 }
@@ -93,13 +104,16 @@ Este projeto segue os princípios da **Clean Architecture**. A arquitetura foi o
 
 ### Estrutura
 
-- **Domain (Camada de Domínio)**: Contém as regras de negócio fundamentais. 
+- **Domain (Camada de Domínio)**: Contém as regras de negócio fundamentais.
+
   - **`entities/movie.py`**: Define a entidade `Movie` com os atributos necessários.
 
 - **Use Cases (Casos de Uso)**: Implementa a lógica de aplicação.
+
   - **`use_cases/producer_intervals.py`**: Calcula os intervalos entre prêmios consecutivos para os produtores.
 
 - **Interface Adapters (Adaptadores de Interface)**: Faz a ponte entre o domínio e os frameworks ou tecnologias externas.
+
   - **`repositories/movie_repository.py`**: Interage com o banco de dados para buscar os dados.
   - **`controllers/producer_controller.py`**: Controla o fluxo de dados entre os casos de uso e os endpoints.
 
