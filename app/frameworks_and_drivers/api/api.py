@@ -40,7 +40,7 @@ def initialize_database():
     csv_path = "data/movielist.csv"
     if os.path.exists(csv_path):
         with open(csv_path, "r") as file:
-            reader = csv.DictReader(file, delimiter=';')
+            reader = csv.DictReader(file, delimiter=',')
             for row in reader:
                 cursor.execute("""
                 INSERT INTO movies (year, title, studios, producers, winner)
